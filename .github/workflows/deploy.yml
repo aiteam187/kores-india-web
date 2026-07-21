@@ -1,4 +1,4 @@
-name: Deploy Web Dashboard to Azure Static Web Apps
+name: CI - Kores India Web Dashboard
 
 on:
   push:
@@ -7,28 +7,15 @@ on:
   workflow_dispatch:
 
 jobs:
-  build_and_deploy_job:
+  build:
     runs-on: ubuntu-latest
-    name: Build and Deploy Job
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v3
         with:
           submodules: true
 
-      - name: Build And Deploy to Azure Static Web Apps
-        id: builddeploy
-        uses: Azure/static-web-apps-deploy@v1
-        with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          action: "upload"
-          app_location: "/" # App source code path
-          api_location: "" # Api source code path - optional
-          output_location: "dist" # Built app content directory
-        env:
-          VITE_WEB_API_URL: https://kalpataru-extracto-api.livelyplant-8f4ea245.eastus.azurecontainerapps.io
-          VITE_WEB_API_URL_HOST: https://kalpataru-extracto-api.livelyplant-8f4ea245.eastus.azurecontainerapps.io
-          VITE_APP_NAME: "Kalptaru Extracto"
-          VITE_APP_VERSION: "1.0.0"
-          VITE_ENABLE_MOCK_DATA: "false"
+      # No deployment target configured yet for Kores India.
+      # This workflow only checks out code on push — it does not build
+      # or deploy to any server. Add deploy steps here once Kores India's
+      # own Static Web App (or other hosting) is provisioned.
