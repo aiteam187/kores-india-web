@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 import {
   X,
-  Mail,
   Phone,
   MapPin,
   Shield,
@@ -10,7 +9,6 @@ import {
   UserX,
   Calendar,
   Hash,
-  User,
 } from "lucide-react";
 
 const UserManagementViewModal = ({ isOpen, onClose, employee }) => {
@@ -28,7 +26,7 @@ const UserManagementViewModal = ({ isOpen, onClose, employee }) => {
 
   if (!isOpen || !employee) return null;
 
-  const isActive = employee.Status === "Active";
+  const isActive = employee.status === "Active";
 
   return createPortal(
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
@@ -46,7 +44,7 @@ const UserManagementViewModal = ({ isOpen, onClose, employee }) => {
           <div>
             <h2 className="text-lg font-bold text-white">Employee Details</h2>
             <p className="text-xs text-blue-200 mt-0.5">
-              View-only information • {employee.Emp_Id}
+              View-only information • {employee.emp_id}
             </p>
           </div>
           <button
@@ -66,15 +64,15 @@ const UserManagementViewModal = ({ isOpen, onClose, employee }) => {
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
                     <span className="text-2xl font-bold text-white">
-                      {employee.Emp_Name?.charAt(0).toUpperCase()}
+                      {employee.name?.charAt(0).toUpperCase()}
                     </span>
                   </div>
                   <div>
                     <h3 className="text-xl font-bold text-gray-900">
-                      {employee.Emp_Name}
+                      {employee.name}
                     </h3>
                     <p className="text-sm text-gray-500 mt-1">
-                      @{employee.Username}
+                      @{employee.login_id}
                     </p>
                   </div>
                 </div>
@@ -92,7 +90,7 @@ const UserManagementViewModal = ({ isOpen, onClose, employee }) => {
                   ) : (
                     <UserX className="w-4 h-4" />
                   )}
-                  {employee.Status}
+                  {employee.status}
                 </div>
               </div>
 
@@ -106,7 +104,7 @@ const UserManagementViewModal = ({ isOpen, onClose, employee }) => {
                     </p>
                   </div>
                   <p className="text-base font-bold text-gray-900">
-                    {employee.Emp_Id}
+                    {employee.emp_id}
                   </p>
                 </div>
 
@@ -119,13 +117,13 @@ const UserManagementViewModal = ({ isOpen, onClose, employee }) => {
                   </div>
                   <div
                     className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-sm font-semibold ${
-                      employee.Designation?.toLowerCase() === "admin"
+                      employee.designation?.toLowerCase() === "admin"
                         ? "bg-blue-100 text-blue-700"
                         : "bg-gray-200 text-gray-700"
                     }`}
                   >
                     <Shield className="w-3.5 h-3.5" />
-                    {employee.Designation}
+                    {employee.designation}
                   </div>
                 </div>
               </div>
@@ -134,36 +132,20 @@ const UserManagementViewModal = ({ isOpen, onClose, employee }) => {
             {/* Contact Information */}
             <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
               <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-4 flex items-center gap-2">
-                <Mail className="w-4 h-4 text-blue-600" />
+                <Phone className="w-4 h-4 text-blue-600" />
                 Contact Information
               </h4>
-              <div className="space-y-4">
-                <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Mail className="w-4 h-4 text-blue-600" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-gray-500 uppercase mb-1">
-                      Email Address
-                    </p>
-                    <p className="text-sm font-medium text-gray-900 break-all">
-                      {employee.Emp_Email}
-                    </p>
-                  </div>
+              <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Phone className="w-4 h-4 text-green-600" />
                 </div>
-
-                <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                  <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Phone className="w-4 h-4 text-green-600" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-gray-500 uppercase mb-1">
-                      Phone Number
-                    </p>
-                    <p className="text-sm font-medium text-gray-900">
-                      {employee.Phone_Number}
-                    </p>
-                  </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-gray-500 uppercase mb-1">
+                    Phone Number
+                  </p>
+                  <p className="text-sm font-medium text-gray-900">
+                    {employee.phone_number}
+                  </p>
                 </div>
               </div>
             </div>
@@ -174,36 +156,43 @@ const UserManagementViewModal = ({ isOpen, onClose, employee }) => {
                 <MapPin className="w-4 h-4 text-blue-600" />
                 Location Details
               </h4>
-              <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
                 <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
                   <MapPin className="w-4 h-4 text-purple-600" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-semibold text-gray-500 uppercase mb-1">
-                    Base Location
+                    Location
                   </p>
-                  <p className="text-sm font-medium text-gray-900">
-                    {employee.Base_Location}
-                  </p>
+                  {employee.is_online ? (
+                    <p className="text-sm font-medium text-gray-900">
+                      {employee.location || "Not set"}
+                    </p>
+                  ) : (
+                    <p className="text-sm font-medium text-gray-400 flex items-center gap-1.5">
+                      <span className="h-1.5 w-1.5 rounded-full bg-gray-400" />
+                      Offline
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
 
             {/* Additional Info (if available) */}
-            {(employee.Created_At || employee.Updated_At) && (
+            {(employee.created_at || employee.updated_at) && (
               <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
                 <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-4 flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-blue-600" />
                   Record Information
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {employee.Created_At && (
+                  {employee.created_at && (
                     <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
                       <p className="text-xs font-semibold text-gray-500 uppercase mb-1">
                         Created On
                       </p>
                       <p className="text-sm font-medium text-gray-900">
-                        {new Date(employee.Created_At).toLocaleDateString(
+                        {new Date(employee.created_at).toLocaleDateString(
                           "en-US",
                           {
                             year: "numeric",
@@ -214,13 +203,13 @@ const UserManagementViewModal = ({ isOpen, onClose, employee }) => {
                       </p>
                     </div>
                   )}
-                  {employee.Updated_At && (
+                  {employee.updated_at && (
                     <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
                       <p className="text-xs font-semibold text-gray-500 uppercase mb-1">
                         Last Updated
                       </p>
                       <p className="text-sm font-medium text-gray-900">
-                        {new Date(employee.Updated_At).toLocaleDateString(
+                        {new Date(employee.updated_at).toLocaleDateString(
                           "en-US",
                           {
                             year: "numeric",

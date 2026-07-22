@@ -89,103 +89,6 @@ class UserService {
   }
 
   /**
-   * Validate email format with specific error messages
-   * @param {string} email
-   * @returns {Object} - { isValid: boolean, message: string }
-   */
-  validateEmail(email) {
-    if (!email?.trim()) {
-      return {
-        isValid: false,
-        message: "Email is required",
-      };
-    }
-
-    // Remove whitespace
-    email = email.trim().toLowerCase();
-
-    // Comprehensive email validation regex
-    const emailRegex = /^[a-zA-Z0-9._+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
-    if (!emailRegex.test(email)) {
-      return {
-        isValid: false,
-        message: "Please enter a valid email address",
-      };
-    }
-
-    // Check email length
-    if (email.length > 100) {
-      return {
-        isValid: false,
-        message: "Please enter a valid email address",
-      };
-    }
-
-    // Check for consecutive dots
-    if (email.includes("..")) {
-      return {
-        isValid: false,
-        message: "Please enter a valid email address",
-      };
-    }
-
-    // Split and validate parts
-    const parts = email.split("@");
-    if (parts.length !== 2) {
-      return {
-        isValid: false,
-        message: "Please enter a valid email address",
-      };
-    }
-
-    const [localPart, domain] = parts;
-
-    // Validate local part
-    if (!localPart || localPart.startsWith(".") || localPart.endsWith(".")) {
-      return {
-        isValid: false,
-        message: "Please enter a valid email address",
-      };
-    }
-
-    // Validate domain part
-    if (
-      !domain ||
-      domain.startsWith(".") ||
-      domain.endsWith(".") ||
-      !domain.includes(".")
-    ) {
-      return {
-        isValid: false,
-        message: "Please enter a valid email address",
-      };
-    }
-
-    // Check domain extension (must be 2-6 characters - covers .co to .museum)
-    const domainParts = domain.split(".");
-    const extension = domainParts[domainParts.length - 1];
-
-    // TLD should be between 2-6 characters (.co, .com, .info, .museum)
-    if (extension.length < 2 || extension.length > 6) {
-      return {
-        isValid: false,
-        message: "Please enter a valid email address",
-      };
-    }
-
-    // Check if extension contains only letters
-    if (!/^[a-zA-Z]+$/.test(extension)) {
-      return {
-        isValid: false,
-        message: "Please enter a valid email address",
-      };
-    }
-
-    return { isValid: true, message: "Email is valid" };
-  }
-
-  /**
    * Validate phone number (10 digits)
    * @param {string} phone
    * @returns {boolean}
@@ -237,23 +140,13 @@ class UserService {
    * @returns {Object} - Formatted data for API
    */
   formatUserData(formData) {
-    // Only include Emp_Id if it's provided
-    const payload = {
-      Emp_Name: formData.name.trim(),
-      Emp_Email: formData.email.trim().toLowerCase(),
-      Username: formData.username.trim().toLowerCase(),
-      Password: formData.password,
-      Designation: formData.designation.trim(),
-      Base_Location: formData.baseLocation.trim(),
-      Phone_Number: formData.phone.trim(),
+    return {
+      name: formData.name.trim(),
+      phone_number: formData.phone.trim(),
+      password: formData.password,
+      designation: formData.designation.trim(),
+      status: formData.status || "Active",
     };
-
-    // Only add Emp_Id if user provided one
-    if (formData.empId && formData.empId.trim()) {
-      payload.Emp_Id = formData.empId.trim().toUpperCase();
-    }
-
-    return payload;
   }
 
   /**
@@ -279,7 +172,7 @@ class UserService {
    * Expected request: POST { field: string, value: string, excludeEmpId?: string }
    * Expected response: { isUnique: boolean }
    *
-   * @param {string} field - Field name (Username, Emp_Email, Phone_Number)
+   * @param {string} field - Field name (login_id, phone_number)
    * @param {string} value - Value to check
    * @returns {Promise<Object>} - { isUnique: boolean }
    */

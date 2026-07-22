@@ -37,7 +37,7 @@ const Sidebar = () => {
       name: "User Management",
       icon: Users,
       key: "usermanagement",
-      disabled: true,
+      disabled: false,
     },
     // { name: "Add User", icon: UserPlus, key: "adduser", disabled: false },
   ];

@@ -2,14 +2,13 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../context/AppContext";
 import userService from "../services/userService";
+import userManagementService from "../services/userManagementService";
 import {
   UserPlus,
   User,
-  Mail,
   Phone,
   Lock,
   Briefcase,
-  MapPin,
   ChevronDown,
   Eye,
   EyeOff,
@@ -48,7 +47,7 @@ const FormInput = ({
       </label>
       <div className="relative group">
         <div
-          className={`absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none transition-colors 
+          className={`absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none transition-colors
           ${error ? "text-red-500" : isFilled ? "text-teal-600" : "text-gray-400 group-focus-within:text-teal-600"}`}
         >
           <Icon size={16} strokeWidth={2} />
@@ -69,14 +68,14 @@ const FormInput = ({
                 : isFilled
                   ? "border-teal-300 ring-2 ring-teal-100"
                   : "border-gray-200 focus:border-teal-500 focus:ring-teal-100"
-            } 
+            }
             [&:-webkit-autofill]:shadow-[0_0_0_1000px_white_inset]`}
         />
         {isPassword && (
           <button
             type="button"
             onClick={togglePassword}
-            className={`absolute inset-y-0 right-0 pr-3 flex items-center transition-colors 
+            className={`absolute inset-y-0 right-0 pr-3 flex items-center transition-colors
               ${error ? "text-red-500" : isFilled ? "text-teal-600" : "text-gray-400 hover:text-teal-600"}`}
           >
             {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -169,14 +168,9 @@ const AddUser = () => {
 
   const initialFormState = {
     name: "",
-    username: "",
-    email: "",
     phone: "",
     password: "",
-    confirmPassword: "",
     designation: "",
-    baseLocation: "",
-    empId: "",
     status: "Active",
   };
 
@@ -185,12 +179,11 @@ const AddUser = () => {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isStatusFocused, setIsStatusFocused] = useState(false);
 
-  // New State for API Result UI
   const [apiStatus, setApiStatus] = useState("idle"); // 'idle', 'success', 'error'
   const [apiError, setApiError] = useState("");
+  const [createdUser, setCreatedUser] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -213,21 +206,6 @@ const AddUser = () => {
       newErrors.name = "Name must be at least 2 characters";
     }
 
-    if (!formData.username.trim()) {
-      newErrors.username = "Username is required";
-    } else if (formData.username.trim().length < 3) {
-      newErrors.username = "Username must be at least 3 characters";
-    } else if (!/^[a-zA-Z0-9_]+$/.test(formData.username)) {
-      newErrors.username =
-        "Username can only contain letters, numbers, and underscores";
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!userService.validateEmail(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
-    }
-
     if (!formData.phone.trim()) {
       newErrors.phone = "Phone number is required";
     } else if (!userService.validatePhone(formData.phone)) {
@@ -245,18 +223,8 @@ const AddUser = () => {
       }
     }
 
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = "Please confirm your password";
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
-    }
-
     if (!formData.designation.trim()) {
       newErrors.designation = "Designation is required";
-    }
-
-    if (!formData.baseLocation.trim()) {
-      newErrors.baseLocation = "Base location is required";
     }
 
     setErrors(newErrors);
@@ -264,7 +232,7 @@ const AddUser = () => {
   };
 
   const handleReset = () => {
-    setApiStatus("idle"); // Reset result view
+    setApiStatus("idle");
     if (
       Object.values(formData).some(
         (value) => value !== "" && value !== "Active",
@@ -299,14 +267,14 @@ const AddUser = () => {
   const handleConfirmCreate = async () => {
     setShowModal(false);
     setLoading(true);
-    setApiStatus("idle"); // Reset previous status
+    setApiStatus("idle");
 
     try {
       const userData = userService.formatUserData(formData);
-      const response = await userService.registerUser(userData);
+      const response = await userManagementService.createEmployee(userData);
 
       if (response.success) {
-        // Show Success State after 2 seconds
+        setCreatedUser(response.data);
         setTimeout(() => {
           showNotification(
             response.message || "User created successfully!",
@@ -322,7 +290,6 @@ const AddUser = () => {
 
       const errorMessage = error.message || "Failed to create user";
 
-      // Show Error State after 2 seconds
       setTimeout(() => {
         showNotification(errorMessage, "error");
         setApiStatus("error");
@@ -350,7 +317,7 @@ const AddUser = () => {
               Add New User
             </h2>
             <p className="text-xs text-gray-500 mt-1">
-              Create a new user account with secure credentials
+              Create a new security guard account for the Tab app
             </p>
           </div>
         </div>
@@ -358,7 +325,6 @@ const AddUser = () => {
 
       {/* Form Card */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-        {/* LOADING SPINNER VIEW (2 Seconds) */}
         {loading && apiStatus === "idle" && (
           <div className="p-12 flex items-center justify-center min-h-[400px]">
             <div className="text-center">
@@ -370,7 +336,6 @@ const AddUser = () => {
           </div>
         )}
 
-        {/* SUCCESS STATE CARD */}
         {apiStatus === "success" && (
           <div className="p-12 text-center flex flex-col items-center justify-center min-h-[400px]">
             <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600 mb-6 animate-bounce-short">
@@ -379,11 +344,19 @@ const AddUser = () => {
             <h3 className="text-2xl font-bold text-gray-900 mb-2">
               User Created Successfully
             </h3>
-            <p className="text-gray-500 mb-8 max-w-sm">
+            <p className="text-gray-500 mb-2 max-w-sm">
               The account for{" "}
               <span className="font-bold text-gray-900"> {formData.name}</span>{" "}
               has been created and is now active.
             </p>
+            {createdUser?.login_id && (
+              <p className="text-sm text-gray-600 mb-8">
+                Login ID:{" "}
+                <span className="font-mono font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded">
+                  {createdUser.login_id}
+                </span>
+              </p>
+            )}
             <button
               onClick={() => navigate("/dashboard")}
               className="flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow-md transition-all"
@@ -394,7 +367,6 @@ const AddUser = () => {
           </div>
         )}
 
-        {/* ERROR STATE CARD */}
         {apiStatus === "error" && (
           <div className="p-12 text-center flex flex-col items-center justify-center min-h-[400px]">
             <div className="w-20 h-20 bg-rose-100 rounded-full flex items-center justify-center text-rose-600 mb-6">
@@ -416,7 +388,6 @@ const AddUser = () => {
           </div>
         )}
 
-        {/* FORM STATE (Default) */}
         {apiStatus === "idle" && !loading && (
           <form onSubmit={validateAndOpenModal}>
             {/* Personal Information Section */}
@@ -438,30 +409,6 @@ const AddUser = () => {
                   value={formData.name}
                   onChange={handleChange}
                   error={errors.name}
-                  required
-                />
-
-                <FormInput
-                  label="Username"
-                  icon={User}
-                  name="username"
-                  type="text"
-                  placeholder="Enter username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  error={errors.username}
-                  required
-                />
-
-                <FormInput
-                  label="Email Address"
-                  icon={Mail}
-                  name="email"
-                  type="email"
-                  placeholder="user@company.com"
-                  value={formData.email}
-                  onChange={handleChange}
-                  error={errors.email}
                   required
                 />
 
@@ -506,22 +453,6 @@ const AddUser = () => {
                   />
                   <PasswordStrengthIndicator password={formData.password} />
                 </div>
-
-                <FormInput
-                  label="Confirm Password"
-                  icon={Lock}
-                  name="confirmPassword"
-                  isPassword
-                  showPassword={showConfirmPassword}
-                  togglePassword={() =>
-                    setShowConfirmPassword(!showConfirmPassword)
-                  }
-                  placeholder="Re-enter password"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  error={errors.confirmPassword}
-                  required
-                />
               </div>
 
               <div className="mt-3 p-2.5 bg-blue-50 rounded-lg border border-blue-200">
@@ -531,8 +462,8 @@ const AddUser = () => {
                     <span className="font-semibold">
                       Password must contain:
                     </span>{" "}
-                    At least 8 characters, uppercase & lowercase letters,
-                    numbers, and special characters
+                    At least 8 characters, uppercase & lowercase letters, and
+                    numbers
                   </div>
                 </div>
               </div>
@@ -553,22 +484,10 @@ const AddUser = () => {
                   icon={Briefcase}
                   name="designation"
                   type="text"
-                  placeholder="e.g., Manager, Developer"
+                  placeholder="e.g., Security Guard"
                   value={formData.designation}
                   onChange={handleChange}
                   error={errors.designation}
-                  required
-                />
-
-                <FormInput
-                  label="Base Location"
-                  icon={MapPin}
-                  name="baseLocation"
-                  type="text"
-                  placeholder="e.g., Mumbai, India"
-                  value={formData.baseLocation}
-                  onChange={handleChange}
-                  error={errors.baseLocation}
                   required
                 />
 
@@ -643,11 +562,7 @@ const AddUser = () => {
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
-            {/* Modal Header */}
-            <div
-              className="bg-gradient-to-r from-gray-100 to-gray-200
-             px-6 py-5"
-            >
+            <div className="bg-gradient-to-r from-gray-100 to-gray-200 px-6 py-5">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
                   <UserPlus
@@ -667,13 +582,11 @@ const AddUser = () => {
               </div>
             </div>
 
-            {/* Modal Body */}
             <div className="p-6">
               <p className="text-sm text-gray-600 mb-4">
                 You are about to create a new user account for:
               </p>
 
-              {/* User Details Summary */}
               <div className="bg-gray-50 rounded-lg p-4 mb-6 space-y-3 border border-gray-200">
                 <div className="flex items-center justify-between py-2 border-b border-gray-200">
                   <span className="text-sm font-medium text-gray-600">
@@ -685,23 +598,7 @@ const AddUser = () => {
                 </div>
                 <div className="flex items-center justify-between py-2 border-b border-gray-200">
                   <span className="text-sm font-medium text-gray-600">
-                    Username
-                  </span>
-                  <span className="text-sm font-bold text-gray-900">
-                    {formData.username}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between py-2 border-b border-gray-200">
-                  <span className="text-sm font-medium text-gray-600">
-                    Email
-                  </span>
-                  <span className="text-sm font-bold text-gray-900 truncate ml-2">
-                    {formData.email}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between py-2 border-b border-gray-200">
-                  <span className="text-sm font-medium text-gray-600">
-                    Phone
+                    Phone Number
                   </span>
                   <span className="text-sm font-bold text-gray-900">
                     {formData.phone}
@@ -715,17 +612,8 @@ const AddUser = () => {
                     {formData.designation}
                   </span>
                 </div>
-                <div className="flex items-center justify-between py-2">
-                  <span className="text-sm font-medium text-gray-600">
-                    Location
-                  </span>
-                  <span className="text-sm font-bold text-gray-900">
-                    {formData.baseLocation}
-                  </span>
-                </div>
               </div>
 
-              {/* Action Buttons */}
               <div className="flex flex-col gap-3">
                 <button
                   onClick={handleConfirmCreate}

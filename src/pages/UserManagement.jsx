@@ -120,9 +120,11 @@ const UserManagement = () => {
 
     if (result.success) {
       showNotification("Employee added successfully", "success");
-    } else {
-      showNotification(result.message || "Failed to add employee", "error");
+      return result.data;
     }
+
+    showNotification(result.message || "Failed to add employee", "error");
+    throw new Error(result.message || "Failed to add employee");
   };
 
   const handleViewEmployee = (employee) => {
@@ -157,7 +159,7 @@ const UserManagement = () => {
 
     setDeleting(true);
 
-    const result = await deleteEmployee(selectedEmployee.Emp_Id);
+    const result = await deleteEmployee(selectedEmployee.emp_id);
 
     if (result.success) {
       showNotification("Employee deleted successfully", "success");
@@ -184,21 +186,21 @@ const UserManagement = () => {
   const searchFilteredEmployees = searchQuery
     ? employees.filter(
         (emp) =>
-          emp.Emp_Name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          emp.Emp_Id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          emp.Emp_Email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          emp.Username?.toLowerCase().includes(searchQuery.toLowerCase()),
+          emp.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          emp.emp_id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          emp.phone_number?.includes(searchQuery) ||
+          emp.login_id?.toLowerCase().includes(searchQuery.toLowerCase()),
       )
     : employees;
 
   const filteredEmployees = activeFilter
     ? searchFilteredEmployees.filter((emp) => {
-        if (activeFilter === "active") return emp.Status === "Active";
-        if (activeFilter === "inactive") return emp.Status === "Inactive";
+        if (activeFilter === "active") return emp.status === "Active";
+        if (activeFilter === "inactive") return emp.status === "Inactive";
         if (activeFilter === "admin")
-          return emp.Designation?.toLowerCase() === "admin";
+          return emp.designation?.toLowerCase() === "admin";
         if (activeFilter === "user")
-          return emp.Designation?.toLowerCase() === "user";
+          return emp.designation?.toLowerCase() === "security guard";
         return true;
       })
     : searchFilteredEmployees;
@@ -454,7 +456,7 @@ const UserManagement = () => {
         onConfirm={handleConfirmDelete}
         title="Delete Employee"
         message="Are you sure you want to delete this employee? This will permanently remove their account and all associated data."
-        employeeName={`${selectedEmployee?.Emp_Name} (${selectedEmployee?.Emp_Id})`}
+        employeeName={`${selectedEmployee?.name} (${selectedEmployee?.emp_id})`}
         loading={deleting}
       />
     </>

@@ -4,7 +4,6 @@ import {
   Trash2,
   UserCheck,
   UserX,
-  Mail,
   Phone,
   MapPin,
   Shield,
@@ -75,19 +74,19 @@ const UserManagementTable = ({
 
     if (tableFilter.status.length > 0) {
       filtered = filtered.filter((e) =>
-        tableFilter.status.includes(e.Status?.toLowerCase()),
+        tableFilter.status.includes(e.status?.toLowerCase()),
       );
     }
 
     if (tableFilter.designation.length > 0) {
       filtered = filtered.filter((e) =>
-        tableFilter.designation.includes(e.Designation?.toLowerCase()),
+        tableFilter.designation.includes(e.designation?.toLowerCase()),
       );
     }
 
     if (tableFilter.location.length > 0) {
       filtered = filtered.filter((e) =>
-        tableFilter.location.includes(e.Base_Location?.toLowerCase()),
+        tableFilter.location.includes(e.location?.toLowerCase()),
       );
     }
 
@@ -296,12 +295,12 @@ const UserManagementTable = ({
     const [isOpen, setIsOpen] = useState(false);
 
     const sortOptions = [
-      { key: "Emp_Id", label: "Employee ID" },
-      { key: "Emp_Name", label: "Name" },
-      { key: "Emp_Email", label: "Email" },
-      { key: "Designation", label: "Designation" },
-      { key: "Base_Location", label: "Location" },
-      { key: "Status", label: "Status" },
+      { key: "emp_id", label: "Employee ID" },
+      { key: "name", label: "Name" },
+      { key: "phone_number", label: "Phone Number" },
+      { key: "designation", label: "Designation" },
+      { key: "location", label: "Location" },
+      { key: "status", label: "Status" },
     ];
 
     const getSortIcon = (key) => {
@@ -480,7 +479,7 @@ const UserManagementTable = ({
                     Designation (Multi-select)
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {["admin", "user", "manager", "supervisor"].map((des) => (
+                    {["security guard", "supervisor", "admin"].map((des) => (
                       <button
                         key={des}
                         onClick={() => toggleDesignationFilter(des)}
@@ -504,7 +503,7 @@ const UserManagementTable = ({
                     Location (Multi-select)
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {["Chennai"].map((loc) => (
+                    {["Gate 1", "Gate 2"].map((loc) => (
                       <button
                         key={loc}
                         onClick={() => toggleLocationFilter(loc)}
@@ -794,24 +793,18 @@ const UserManagementTable = ({
           <tbody className="bg-white divide-y divide-gray-50">
             {paginatedEmployees.map((employee, index) => (
               <tr
-                key={employee.Emp_Id}
-                className={`hover:bg-gray-50 transition-colors ${
+                key={employee.emp_id}
+                onClick={() => onViewEmployee && onViewEmployee(employee)}
+                className={`hover:bg-gray-50 transition-colors cursor-pointer ${
                   index % 2 === 0 ? "bg-white" : "bg-gray-50/30"
                 }`}
               >
                 {/* Employee ID */}
                 {visibleColumns.emp_id && (
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-teal-100 rounded-lg flex items-center justify-center">
-                        <span className="text-xs font-bold text-teal-700">
-                          {employee.Emp_Id?.replace("EMP", "")}
-                        </span>
-                      </div>
-                      <span className="text-sm font-semibold text-gray-900">
-                        {employee.Emp_Id}
-                      </span>
-                    </div>
+                    <span className="text-sm font-semibold text-gray-900">
+                      {employee.emp_id?.replace(/^([A-Za-z]+)(\d+)$/, "$1-$2")}
+                    </span>
                   </td>
                 )}
 
@@ -820,10 +813,10 @@ const UserManagementTable = ({
                   <td className="px-6 py-4">
                     <div className="flex flex-col">
                       <span className="text-sm font-bold text-gray-900">
-                        {employee.Emp_Name}
+                        {employee.name}
                       </span>
                       <span className="text-xs text-gray-500 mt-0.5">
-                        @{employee.Username}
+                        @{employee.login_id}
                       </span>
                     </div>
                   </td>
@@ -832,47 +825,50 @@ const UserManagementTable = ({
                 {/* Contact Info */}
                 {visibleColumns.contact_info && (
                   <td className="px-6 py-4">
-                    <div className="flex flex-col gap-1">
-                      <div className="flex items-center gap-2 text-xs text-gray-600">
-                        <Mail className="w-3 h-3 text-gray-400" />
-                        <span className="truncate max-w-[200px]">
-                          {employee.Emp_Email}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 text-xs text-gray-600">
-                        <Phone className="w-3 h-3 text-gray-400" />
-                        <span>{employee.Phone_Number}</span>
-                      </div>
+                    <div className="flex items-center gap-2 text-xs text-gray-600">
+                      <Phone className="w-3 h-3 text-gray-400" />
+                      <span>{employee.phone_number}</span>
                     </div>
                   </td>
                 )}
 
-                {/* Location */}
+                {/* Location — shows the gate if online, otherwise just "Offline" */}
                 {visibleColumns.location && (
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-2 text-sm text-gray-700">
-                      <MapPin className="w-4 h-4 text-gray-400" />
-                      {employee.Base_Location}
-                    </div>
+                    {employee.is_online ? (
+                      <div className="flex items-center gap-2 text-sm text-gray-700">
+                        <span className="h-2 w-2 rounded-full flex-shrink-0 bg-emerald-500 animate-pulse" />
+                        <MapPin className="w-4 h-4 text-gray-400" />
+                        <span>{employee.location || "Not set"}</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 text-sm text-gray-400">
+                        <span className="h-2 w-2 rounded-full flex-shrink-0 bg-gray-300" />
+                        Offline
+                      </div>
+                    )}
                   </td>
                 )}
 
                 {/* Designation */}
                 {visibleColumns.designation && (
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {getDesignationBadge(employee.Designation)}
+                    {getDesignationBadge(employee.designation)}
                   </td>
                 )}
 
                 {/* Status */}
                 {visibleColumns.status && (
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {getStatusBadge(employee.Status)}
+                    {getStatusBadge(employee.status)}
                   </td>
                 )}
 
                 {/* Actions */}
-                <td className="px-6 py-4 whitespace-nowrap text-right">
+                <td
+                  className="px-6 py-4 whitespace-nowrap text-right"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <div className="flex items-center justify-end gap-2">
                     {/* View Button */}
                     <button

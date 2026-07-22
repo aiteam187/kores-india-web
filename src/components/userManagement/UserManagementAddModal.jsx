@@ -10,6 +10,7 @@ import {
   EyeOff,
   Info,
 } from "lucide-react";
+import ConfirmActionDialog from "./ConfirmActionDialog";
 
 // Password Strength Indicator Component
 const PasswordStrengthIndicator = ({ password }) => {
@@ -82,29 +83,27 @@ const PasswordStrengthIndicator = ({ password }) => {
 
 const UserManagementAddModal = ({ isOpen, onClose, onAdd }) => {
   const [formData, setFormData] = useState({
-    Emp_Name: "",
-    Username: "",
-    Emp_Email: "",
-    Phone_Number: "",
-    Password: "",
-    Confirm_Password: "",
-    Base_Location: "",
-    Designation: "",
-    Status: "Active",
+    name: "",
+    phone_number: "",
+    password: "",
+    designation: "",
+    status: "Active",
   });
+  const [createdUser, setCreatedUser] = useState(null);
 
   const [errors, setErrors] = useState({});
   const [adding, setAdding] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [apiStatus, setApiStatus] = useState("idle"); // 'idle', 'loading', 'success', 'error'
   const [apiError, setApiError] = useState("");
+  const [showConfirm, setShowConfirm] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
       setApiStatus("idle");
       setApiError("");
+      setShowConfirm(false);
     } else {
       document.body.style.overflow = "unset";
     }
@@ -133,61 +132,31 @@ const UserManagementAddModal = ({ isOpen, onClose, onAdd }) => {
       };
     if (!/[0-9]/.test(password))
       return { isValid: false, message: "Password must contain numbers" };
-    if (!/[^a-zA-Z0-9]/.test(password))
-      return {
-        isValid: false,
-        message: "Password must contain special characters",
-      };
     return { isValid: true };
   };
 
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.Emp_Name?.trim()) {
-      newErrors.Emp_Name = "Employee name is required";
-    } else if (formData.Emp_Name.trim().length < 2) {
-      newErrors.Emp_Name = "Name must be at least 2 characters";
+    if (!formData.name?.trim()) {
+      newErrors.name = "Name is required";
+    } else if (formData.name.trim().length < 2) {
+      newErrors.name = "Name must be at least 2 characters";
     }
 
-    if (!formData.Username?.trim()) {
-      newErrors.Username = "Username is required";
-    } else if (formData.Username.length < 3) {
-      newErrors.Username = "Username must be at least 3 characters";
-    } else if (!/^[a-zA-Z0-9_]+$/.test(formData.Username)) {
-      newErrors.Username =
-        "Username can only contain letters, numbers, and underscores";
+    if (!formData.phone_number?.trim()) {
+      newErrors.phone_number = "Phone number is required";
+    } else if (!/^\d{10}$/.test(formData.phone_number.replace(/\s/g, ""))) {
+      newErrors.phone_number = "Phone number must be 10 digits";
     }
 
-    if (!formData.Emp_Email?.trim()) {
-      newErrors.Emp_Email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.Emp_Email)) {
-      newErrors.Emp_Email = "Invalid email format";
-    }
-
-    if (!formData.Phone_Number?.trim()) {
-      newErrors.Phone_Number = "Phone number is required";
-    } else if (!/^\d{10}$/.test(formData.Phone_Number.replace(/\s/g, ""))) {
-      newErrors.Phone_Number = "Phone number must be 10 digits";
-    }
-
-    const passwordValidation = validatePassword(formData.Password);
+    const passwordValidation = validatePassword(formData.password);
     if (!passwordValidation.isValid) {
-      newErrors.Password = passwordValidation.message;
+      newErrors.password = passwordValidation.message;
     }
 
-    if (!formData.Confirm_Password) {
-      newErrors.Confirm_Password = "Please confirm your password";
-    } else if (formData.Password !== formData.Confirm_Password) {
-      newErrors.Confirm_Password = "Passwords do not match";
-    }
-
-    if (!formData.Base_Location?.trim()) {
-      newErrors.Base_Location = "Location is required";
-    }
-
-    if (!formData.Designation?.trim()) {
-      newErrors.Designation = "Designation is required";
+    if (!formData.designation?.trim()) {
+      newErrors.designation = "Designation is required";
     }
 
     setErrors(newErrors);
@@ -197,7 +166,7 @@ const UserManagementAddModal = ({ isOpen, onClose, onAdd }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "Phone_Number" && value !== "" && !/^\d+$/.test(value)) return;
+    if (name === "phone_number" && value !== "" && !/^\d+$/.test(value)) return;
 
     setFormData((prev) => ({
       ...prev,
@@ -214,35 +183,36 @@ const UserManagementAddModal = ({ isOpen, onClose, onAdd }) => {
 
   const resetForm = () => {
     setFormData({
-      Emp_Name: "",
-      Username: "",
-      Emp_Email: "",
-      Phone_Number: "",
-      Password: "",
-      Confirm_Password: "",
-      Base_Location: "",
-      Designation: "",
-      Status: "Active",
+      name: "",
+      phone_number: "",
+      password: "",
+      designation: "",
+      status: "Active",
     });
     setErrors({});
     setApiStatus("idle");
     setApiError("");
+    setCreatedUser(null);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     if (!validateForm()) {
       return;
     }
 
+    setShowConfirm(true);
+  };
+
+  const handleConfirmAdd = async () => {
+    setShowConfirm(false);
     setAdding(true);
     setApiStatus("loading");
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      await onAdd(formData);
+      const created = await onAdd(formData);
+      setCreatedUser(created || null);
 
       setApiStatus("success");
       setAdding(false);
@@ -250,15 +220,13 @@ const UserManagementAddModal = ({ isOpen, onClose, onAdd }) => {
       setTimeout(() => {
         resetForm();
         onClose();
-      }, 2000);
+      }, 2500);
     } catch (error) {
       console.error("Error adding employee:", error);
       const errorMessage = error.message || "Failed to add employee";
 
-      // Show alert for any error
-      alert(errorMessage);
-
-      setApiStatus("idle");
+      setApiError(errorMessage);
+      setApiStatus("error");
       setAdding(false);
     }
   };
@@ -325,13 +293,21 @@ const UserManagementAddModal = ({ isOpen, onClose, onAdd }) => {
             <h3 className="text-2xl font-bold text-gray-900 mb-2">
               Employee Added Successfully
             </h3>
-            <p className="text-gray-500 mb-8 max-w-sm">
+            <p className="text-gray-500 mb-2 max-w-sm">
               The account for{" "}
               <span className="font-bold text-gray-900">
-                {formData.Emp_Name}
+                {formData.name}
               </span>{" "}
               has been created and is now active.
             </p>
+            {createdUser?.login_id && (
+              <p className="text-sm text-gray-600">
+                Login ID:{" "}
+                <span className="font-mono font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded">
+                  {createdUser.login_id}
+                </span>
+              </p>
+            )}
           </div>
         )}
 
@@ -365,77 +341,27 @@ const UserManagementAddModal = ({ isOpen, onClose, onAdd }) => {
           >
             <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Employee Name */}
+                {/* Name */}
                 <div className="md:col-span-2">
                   <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5">
-                    Employee Name <span className="text-red-500">*</span>
+                    Name <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
-                    name="Emp_Name"
-                    value={formData.Emp_Name}
+                    name="name"
+                    value={formData.name}
                     onChange={handleChange}
                     className={`w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 ${
-                      errors.Emp_Name
+                      errors.name
                         ? "bg-red-50 border-red-300 focus:ring-red-500/20"
                         : "bg-white border-slate-300 focus:ring-teal-500/20"
                     }`}
                     placeholder="Enter full name"
                   />
-                  {errors.Emp_Name && (
+                  {errors.name && (
                     <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
                       <AlertCircle className="w-3 h-3" />
-                      {errors.Emp_Name}
-                    </p>
-                  )}
-                </div>
-
-                {/* Username */}
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5">
-                    Username <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="Username"
-                    value={formData.Username}
-                    onChange={handleChange}
-                    className={`w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 ${
-                      errors.Username
-                        ? "bg-red-50 border-red-300 focus:ring-red-500/20"
-                        : "bg-white border-slate-300 focus:ring-teal-500/20"
-                    }`}
-                    placeholder="Enter unique username"
-                  />
-                  {errors.Username && (
-                    <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
-                      <AlertCircle className="w-3 h-3" />
-                      {errors.Username}
-                    </p>
-                  )}
-                </div>
-
-                {/* Email */}
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5">
-                    Email Address <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="email"
-                    name="Emp_Email"
-                    value={formData.Emp_Email}
-                    onChange={handleChange}
-                    className={`w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 ${
-                      errors.Emp_Email
-                        ? "bg-red-50 border-red-300 focus:ring-red-500/20"
-                        : "bg-white border-slate-300 focus:ring-teal-500/20"
-                    }`}
-                    placeholder="employee@example.com"
-                  />
-                  {errors.Emp_Email && (
-                    <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
-                      <AlertCircle className="w-3 h-3" />
-                      {errors.Emp_Email}
+                      {errors.name}
                     </p>
                   )}
                 </div>
@@ -447,21 +373,21 @@ const UserManagementAddModal = ({ isOpen, onClose, onAdd }) => {
                   </label>
                   <input
                     type="tel"
-                    name="Phone_Number"
-                    value={formData.Phone_Number}
+                    name="phone_number"
+                    value={formData.phone_number}
                     onChange={handleChange}
                     className={`w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 ${
-                      errors.Phone_Number
+                      errors.phone_number
                         ? "bg-red-50 border-red-300 focus:ring-red-500/20"
                         : "bg-white border-slate-300 focus:ring-teal-500/20"
                     }`}
                     placeholder="9876543210"
                     maxLength="10"
                   />
-                  {errors.Phone_Number && (
+                  {errors.phone_number && (
                     <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
                       <AlertCircle className="w-3 h-3" />
-                      {errors.Phone_Number}
+                      {errors.phone_number}
                     </p>
                   )}
                 </div>
@@ -474,11 +400,11 @@ const UserManagementAddModal = ({ isOpen, onClose, onAdd }) => {
                   <div className="relative">
                     <input
                       type={showPassword ? "text" : "password"}
-                      name="Password"
-                      value={formData.Password}
+                      name="password"
+                      value={formData.password}
                       onChange={handleChange}
                       className={`w-full px-3 py-2 pr-10 border rounded-md text-sm focus:outline-none focus:ring-2 ${
-                        errors.Password
+                        errors.password
                           ? "bg-red-50 border-red-300 focus:ring-red-500/20"
                           : "bg-white border-slate-300 focus:ring-teal-500/20"
                       }`}
@@ -492,53 +418,13 @@ const UserManagementAddModal = ({ isOpen, onClose, onAdd }) => {
                       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
-                  {errors.Password && (
+                  {errors.password && (
                     <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
                       <AlertCircle className="w-3 h-3" />
-                      {errors.Password}
+                      {errors.password}
                     </p>
                   )}
-                  <PasswordStrengthIndicator password={formData.Password} />
-                </div>
-
-                {/* Confirm Password */}
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5">
-                    Confirm Password <span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showConfirmPassword ? "text" : "password"}
-                      name="Confirm_Password"
-                      value={formData.Confirm_Password}
-                      onChange={handleChange}
-                      className={`w-full px-3 py-2 pr-10 border rounded-md text-sm focus:outline-none focus:ring-2 ${
-                        errors.Confirm_Password
-                          ? "bg-red-50 border-red-300 focus:ring-red-500/20"
-                          : "bg-white border-slate-300 focus:ring-teal-500/20"
-                      }`}
-                      placeholder="Re-enter password"
-                    />
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setShowConfirmPassword(!showConfirmPassword)
-                      }
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-teal-600"
-                    >
-                      {showConfirmPassword ? (
-                        <EyeOff size={16} />
-                      ) : (
-                        <Eye size={16} />
-                      )}
-                    </button>
-                  </div>
-                  {errors.Confirm_Password && (
-                    <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
-                      <AlertCircle className="w-3 h-3" />
-                      {errors.Confirm_Password}
-                    </p>
-                  )}
+                  <PasswordStrengthIndicator password={formData.password} />
                 </div>
 
                 {/* Password Info */}
@@ -551,36 +437,11 @@ const UserManagementAddModal = ({ isOpen, onClose, onAdd }) => {
                           Password must contain:
                         </span>{" "}
                         At least 8 characters, uppercase & lowercase letters,
-                        numbers, and special characters
+                        and numbers. Login ID is auto-generated (e.g. 0001)
+                        once the account is created.
                       </div>
                     </div>
                   </div>
-                </div>
-
-                {/* Location */}
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5">
-                    Base Location <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    name="Base_Location"
-                    value={formData.Base_Location}
-                    onChange={handleChange}
-                    className={`w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 ${
-                      errors.Base_Location
-                        ? "bg-red-50 border-red-300 focus:ring-red-500/20"
-                        : "bg-white border-slate-300 focus:ring-teal-500/20"
-                    }`}
-                  >
-                    <option value="">Select Location</option>
-                    <option value="Chennai">Chennai</option>
-                  </select>
-                  {errors.Base_Location && (
-                    <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
-                      <AlertCircle className="w-3 h-3" />
-                      {errors.Base_Location}
-                    </p>
-                  )}
                 </div>
 
                 {/* Designation */}
@@ -589,26 +450,24 @@ const UserManagementAddModal = ({ isOpen, onClose, onAdd }) => {
                     Designation <span className="text-red-500">*</span>
                   </label>
                   <select
-                    name="Designation"
-                    value={formData.Designation}
+                    name="designation"
+                    value={formData.designation}
                     onChange={handleChange}
                     className={`w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 ${
-                      errors.Designation
+                      errors.designation
                         ? "bg-red-50 border-red-300 focus:ring-red-500/20"
                         : "bg-white border-slate-300 focus:ring-teal-500/20"
                     }`}
                   >
                     <option value="">Select Designation</option>
-                    <option value="Admin">Admin</option>
-                    <option value="User">User</option>
-                    <option value="Manager">Manager</option>
+                    <option value="Security Guard">Security Guard</option>
                     <option value="Supervisor">Supervisor</option>
-                    <option value="Team Lead">Team Lead</option>
+                    <option value="Admin">Admin</option>
                   </select>
-                  {errors.Designation && (
+                  {errors.designation && (
                     <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
                       <AlertCircle className="w-3 h-3" />
-                      {errors.Designation}
+                      {errors.designation}
                     </p>
                   )}
                 </div>
@@ -619,8 +478,8 @@ const UserManagementAddModal = ({ isOpen, onClose, onAdd }) => {
                     Initial Status
                   </label>
                   <select
-                    name="Status"
-                    value={formData.Status}
+                    name="status"
+                    value={formData.status}
                     onChange={handleChange}
                     className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/20 bg-white"
                   >
@@ -665,6 +524,39 @@ const UserManagementAddModal = ({ isOpen, onClose, onAdd }) => {
           </div>
         )}
       </div>
+
+      <ConfirmActionDialog
+        isOpen={showConfirm}
+        onClose={() => setShowConfirm(false)}
+        onConfirm={handleConfirmAdd}
+        variant="create"
+        title="Confirm New Employee"
+        message="You are about to create a new employee account with the details below."
+        confirmLabel="Create Employee"
+        loadingLabel="Creating..."
+        details={
+          <>
+            <p className="text-sm">
+              <span className="text-gray-500">Name:</span>{" "}
+              <span className="font-semibold text-gray-900">
+                {formData.name}
+              </span>
+            </p>
+            <p className="text-sm">
+              <span className="text-gray-500">Phone:</span>{" "}
+              <span className="font-semibold text-gray-900">
+                {formData.phone_number}
+              </span>
+            </p>
+            <p className="text-sm">
+              <span className="text-gray-500">Designation:</span>{" "}
+              <span className="font-semibold text-gray-900">
+                {formData.designation}
+              </span>
+            </p>
+          </>
+        }
+      />
     </div>,
     document.body,
   );

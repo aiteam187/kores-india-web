@@ -957,28 +957,19 @@ export const mapUserDataForExport = (rawUserData) => {
 
   return rawUserData.map((user) => {
     const mapped = {
-      "Employee ID": user.Emp_Id || user.emp_id || "-",
-      "Employee Name": user.Emp_Name || user.emp_name || user.name || "-",
-      Username: user.Username || user.username || "-",
-      Email: user.Emp_Email || user.emp_email || user.email || "-",
-      "Phone Number":
-        user.Phone_Number || user.phone_number || user.phone || "-",
-      Designation: user.Designation || user.designation || user.role || "-",
-      "Base Location":
-        user.Base_Location || user.base_location || user.location || "-",
-      Status: user.Status || user.status || "-",
-      "Created At":
-        user.Created_At || user.created_at
-          ? new Date(user.Created_At || user.created_at).toLocaleDateString(
-              "en-IN",
-            )
-          : "-",
-      "Updated At":
-        user.Updated_At || user.updated_at
-          ? new Date(user.Updated_At || user.updated_at).toLocaleDateString(
-              "en-IN",
-            )
-          : "-",
+      "Employee ID": user.emp_id || "-",
+      Name: user.name || "-",
+      "Login ID": user.login_id || "-",
+      "Phone Number": user.phone_number || "-",
+      Designation: user.designation || "-",
+      Location: user.location || "-",
+      Status: user.status || "-",
+      "Created At": user.created_at
+        ? new Date(user.created_at).toLocaleDateString("en-IN")
+        : "-",
+      "Updated At": user.updated_at
+        ? new Date(user.updated_at).toLocaleDateString("en-IN")
+        : "-",
     };
 
     return mapped;

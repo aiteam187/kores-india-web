@@ -20,11 +20,11 @@ const useUserManagement = ({ autoFetch = false } = {}) => {
     }
 
     const total = employeeData.length;
-    const active = employeeData.filter((e) => e.Status === "Active").length;
-    const inactive = employeeData.filter((e) => e.Status === "Inactive").length;
-    const admins = employeeData.filter((e) => e.Designation?.toLowerCase() === "admin").length;
-    const users = employeeData.filter((e) => e.Designation?.toLowerCase() === "user").length;
-    const locations = new Set(employeeData.map((e) => e.Base_Location).filter(Boolean)).size;
+    const active = employeeData.filter((e) => e.status === "Active").length;
+    const inactive = employeeData.filter((e) => e.status === "Inactive").length;
+    const admins = employeeData.filter((e) => e.designation?.toLowerCase() === "admin").length;
+    const users = employeeData.filter((e) => e.designation?.toLowerCase() === "security guard").length;
+    const locations = new Set(employeeData.map((e) => e.location).filter(Boolean)).size;
 
     return [
       { label: "Total Employees", value: total, icon: "users" },
@@ -51,6 +51,21 @@ const useUserManagement = ({ autoFetch = false } = {}) => {
       setError(err.message || "Network Error");
     } finally {
       setLoading(false);
+    }
+  }, [calculateStats]);
+
+  // Silent refresh — same fetch, but skips the loading spinner so periodic
+  // polling for live online/offline status doesn't flash the whole table.
+  const pollEmployees = useCallback(async () => {
+    try {
+      const result = await userManagementService.getAllEmployees();
+      if (result.success) {
+        setEmployees(result.data || []);
+        setStats(calculateStats(result.data || []));
+      }
+    } catch {
+      // Silent — a failed poll shouldn't surface an error banner; the next
+      // poll a few seconds later will just try again.
     }
   }, [calculateStats]);
 
@@ -101,6 +116,14 @@ const useUserManagement = ({ autoFetch = false } = {}) => {
   useEffect(() => {
     if (autoFetch) fetchEmployees();
   }, [autoFetch, fetchEmployees]);
+
+  // Live presence (online/offline + current gate) — poll every 5s so
+  // User Management reflects Tab logins/logouts without a manual refresh.
+  useEffect(() => {
+    if (!autoFetch) return;
+    const interval = setInterval(pollEmployees, 5000);
+    return () => clearInterval(interval);
+  }, [autoFetch, pollEmployees]);
 
   return {
     employees, stats, loading, error, refresh,

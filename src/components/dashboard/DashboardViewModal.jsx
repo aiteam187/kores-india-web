@@ -10,6 +10,7 @@ import {
   Pencil,
   PackageCheck,
   HelpCircle,
+  MapPin,
 } from "lucide-react";
 import invoiceService from "../../services/invoiceService";
 
@@ -425,6 +426,49 @@ const DashboardViewModal = ({ isOpen, onClose, recordId, onEdit, onUpdated }) =>
                   </div>
                 </div>
               </div>
+
+              {/* Geolocation captured at save time */}
+              {record?.latitude != null && record?.longitude != null && (
+                <div className="border border-gray-200 rounded-lg overflow-hidden mb-3 bg-white">
+                  <div className="px-4 py-3 bg-gray-50 flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-gray-500" />
+                    <span className="text-xs font-bold text-gray-700 uppercase tracking-wide">
+                      Location
+                    </span>
+                  </div>
+                  <div className="p-4 flex items-center justify-between gap-4 flex-wrap">
+                    <div>
+                      <span
+                        className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${
+                          record.location_verified
+                            ? "bg-emerald-50 text-emerald-600"
+                            : "bg-amber-50 text-amber-600"
+                        }`}
+                      >
+                        {record.location_verified
+                          ? `Verified at ${record.gate}`
+                          : record.gate
+                            ? `${record.distance_from_gate}m from ${record.gate}`
+                            : "Unverified"}
+                      </span>
+                      <p className="text-xs text-gray-500 mt-1.5">
+                        {record.latitude.toFixed(6)}, {record.longitude.toFixed(6)}
+                        {record.location_accuracy != null && (
+                          <> &bull; accuracy ±{Math.round(record.location_accuracy)}m</>
+                        )}
+                      </p>
+                    </div>
+                    <a
+                      href={`https://www.openstreetmap.org/?mlat=${record.latitude}&mlon=${record.longitude}#map=18/${record.latitude}/${record.longitude}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors"
+                    >
+                      View on Map
+                    </a>
+                  </div>
+                </div>
+              )}
 
               {/* Return status — only shown for returnable items */}
               {isReturnable && (

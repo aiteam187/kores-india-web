@@ -72,16 +72,7 @@ const userManagementService = {
    */
   createEmployee: async (employeeData) => {
     try {
-      // Convert 'Inactive' to 'Deactive' before sending to backend
-      const dataToSend = { ...employeeData };
-      if (dataToSend.Status === "Inactive") {
-        dataToSend.Status = "Deactive";
-      }
-
-      console.log("📤 BEFORE BACKEND - Status:", dataToSend.Status);
-      console.log("📦 Full payload:", dataToSend);
-
-      const response = await api.post(`${BASE_URL}/register`, dataToSend);
+      const response = await api.post(`${BASE_URL}/register`, employeeData);
       return {
         success: true,
         data: response.data.data,
@@ -114,15 +105,9 @@ const userManagementService = {
    */
   updateEmployee: async (empId, employeeData) => {
     try {
-      // Convert 'Inactive' to 'Deactive' before sending to backend
-      const dataToSend = { ...employeeData };
-      if (dataToSend.Status === "Inactive") {
-        dataToSend.Status = "Deactive";
-      }
-
       const response = await api.put(
         `${BASE_URL}/employee/${empId}`,
-        dataToSend,
+        employeeData,
       );
       return {
         success: true,

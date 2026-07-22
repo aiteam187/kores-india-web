@@ -262,6 +262,12 @@ const mapRecord = (r) => {
     vehicle_front_url: r.vehicle_front_url,
     vehicle_back_url: r.vehicle_back_url,
     extracted_data: r.extracted_data,
+    latitude: r.latitude ?? null,
+    longitude: r.longitude ?? null,
+    location_accuracy: r.location_accuracy ?? null,
+    gate: r.gate || null,
+    distance_from_gate: r.distance_from_gate ?? null,
+    location_verified: r.location_verified ?? null,
     raw: r,
   };
 };

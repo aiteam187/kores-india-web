@@ -9,16 +9,6 @@ class AuthService {
    * Login user
    */
   async login(identifier, password) {
-    // Hardcoded bypass credentials
-    if (
-      identifier.trim().toLowerCase() === "admin@gmail.com" &&
-      password === "Admin@123"
-    ) {
-      const user = { name: "Admin", role: "Admin", email: "admin@gmail.com" };
-      this.setUser(user);
-      return { success: true, data: { employee: user }, message: "Login successful" };
-    }
-
     try {
       const response = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
