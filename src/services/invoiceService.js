@@ -150,7 +150,7 @@ const resolveAmount = (extracted_data, manual_fields) => {
 // reaching a table cell, which would crash the render.
 const normalizeProjectSite = (site) => {
   if (typeof site !== "string" || !site || isJunkValue(site)) return "-";
-  return site.trim().toUpperCase() === "HO" ? "Kalpataru Pvt Ltd" : site;
+  return site.trim().toUpperCase() === "HO" ? "Kores India Pvt Ltd" : site;
 };
 
 // ─── Helper: pull project site ───────────────────────────────────────────────

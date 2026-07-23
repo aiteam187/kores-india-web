@@ -134,7 +134,7 @@ const Navbar = () => {
                 justifyContent: "center",
               }}
             >
-              <span style={{ fontSize: "20px", fontWeight: 800, color: "#4f46e5", letterSpacing: "0.12em" }}>KALPTARU</span>
+              <span style={{ fontSize: "20px", fontWeight: 800, color: "#4f46e5", letterSpacing: "0.12em" }}>KORES INDIA</span>
             </div>
           </div>
 

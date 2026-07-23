@@ -26,8 +26,8 @@ const Login = () => {
       const response = await authService.login(identifier.trim(), password);
 
       if (response.success) {
-        if (response.data?.employee) {
-          setUser(response.data.employee);
+        if (response.data) {
+          setUser(response.data);
         }
 
         showNotification(response.message || "Login successful!", "success");

@@ -37,9 +37,10 @@ class AuthService {
         }
         throw new Error(errorMessage);
       }
-      // Store user data in localStorage
-      if (data.success && data.data?.employee) {
-        this.setUser(data.data.employee);
+      // Store user data in localStorage — backend returns the employee
+      // object directly as `data`, not nested under `data.employee`.
+      if (data.success && data.data) {
+        this.setUser(data.data);
       }
 
       return {
