@@ -110,7 +110,7 @@ export const exportUsersToExcel = (data, filename = "users_export") => {
       }
 
       // Get only the columns that have data in these users
-      const allKeys = new Set();
+      const allKeys = new Set<string>();
       users.forEach((user) => {
         Object.keys(user).forEach((key) => {
           // Only include if the column has at least one non-empty value
@@ -131,7 +131,7 @@ export const exportUsersToExcel = (data, filename = "users_export") => {
 
       // Filter data to only include relevant columns
       const filteredData = users.map((user) => {
-        const filtered = {};
+        const filtered: Record<string, any> = {};
         headers.forEach((header) => {
           filtered[header] = user[header];
         });
@@ -488,7 +488,7 @@ export const exportUsersToPDF = (data, filename = "users_export") => {
     // ==========================================
     // CREATE PDF DOCUMENT
     // ==========================================
-    const doc = new jsPDF({
+    const doc: any = new jsPDF({
       orientation: "landscape",
       unit: "mm",
       format: "a4",
@@ -525,7 +525,7 @@ export const exportUsersToPDF = (data, filename = "users_export") => {
     // HELPER FUNCTION: Get columns with data
     // ==========================================
     const getColumnsWithData = (users) => {
-      const allKeys = new Set();
+      const allKeys = new Set<string>();
       users.forEach((user) => {
         Object.keys(user).forEach((key) => {
           const hasData = users.some((u) => {
@@ -948,7 +948,7 @@ export const mapUserDataForExport = (rawUserData) => {
   }
 
   // Get all unique keys from the dataset
-  const allKeys = new Set();
+  const allKeys = new Set<string>();
   rawUserData.forEach((user) => {
     Object.keys(user).forEach((key) => allKeys.add(key));
   });

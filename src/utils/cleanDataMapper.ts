@@ -341,7 +341,7 @@ export function mapRecordForExport(record, invoiceType = null) {
   }
 
   const cleanRecord = {};
-  const seenFields = new Set();
+  const seenFields = new Set<string>();
 
   // Process each field in the record
   Object.keys(record).forEach((originalKey) => {
@@ -425,7 +425,7 @@ export function mapDataForExport(records) {
   });
 
   // Get all unique column names
-  const allColumns = new Set();
+  const allColumns = new Set<string>();
   mappedRecords.forEach((record) => {
     Object.keys(record).forEach((key) => allColumns.add(key));
   });

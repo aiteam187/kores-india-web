@@ -26,7 +26,7 @@ export const mapInvoiceToMaster = (
   console.log("👤 Human Intervention determined:", humanIntervention);
 
   // ✅ CRITICAL: Create masterData object WITHOUT system fields first
-  const masterData = {};
+  const masterData: Record<string, any> = {};
 
   // ✅ Map ALL validation fields FIRST (from invoice data)
   let mappedFieldCount = 0;

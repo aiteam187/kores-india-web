@@ -70,7 +70,7 @@ export const exportToExcel = (data, filename = "export") => {
       }
 
       // Get only the columns that have data in these records
-      const allKeys = new Set();
+      const allKeys = new Set<string>();
       records.forEach((record) => {
         Object.keys(record).forEach((key) => {
           // Only include if the column has at least one non-empty value
@@ -91,7 +91,7 @@ export const exportToExcel = (data, filename = "export") => {
 
       // Filter data to only include relevant columns
       const filteredData = records.map((record) => {
-        const filtered = {};
+        const filtered: Record<string, any> = {};
         headers.forEach((header) => {
           filtered[header] = record[header];
         });
@@ -423,7 +423,7 @@ export const exportToPDF = (data, filename = "export") => {
     // ==========================================
     // CREATE PDF DOCUMENT
     // ==========================================
-    const doc = new jsPDF({
+    const doc: any = new jsPDF({
       orientation: "landscape",
       unit: "mm",
       format: "a4",
@@ -460,7 +460,7 @@ export const exportToPDF = (data, filename = "export") => {
     // HELPER FUNCTION: Get columns with data
     // ==========================================
     const getColumnsWithData = (records) => {
-      const allKeys = new Set();
+      const allKeys = new Set<string>();
       records.forEach((record) => {
         Object.keys(record).forEach((key) => {
           // Only include if the column has at least one non-empty value
