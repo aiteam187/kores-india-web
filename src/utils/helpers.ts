@@ -1,9 +1,7 @@
 /**
  * Format date to DD-MM-YYYY
- * @param {string | Date} date
- * @returns {string}
  */
-export const formatDate = (date) => {
+export const formatDate = (date: string | Date): string => {
   const d = new Date(date);
   const day = String(d.getDate()).padStart(2, "0");
   const month = String(d.getMonth() + 1).padStart(2, "0");
@@ -13,21 +11,16 @@ export const formatDate = (date) => {
 
 /**
  * Truncate text
- * @param {string} text
- * @param {number} maxLength
- * @returns {string}
  */
-export const truncateText = (text, maxLength = 20) => {
+export const truncateText = (text: string, maxLength = 20): string => {
   if (text.length <= maxLength) return text;
   return text.substring(0, maxLength) + "...";
 };
 
 /**
  * Get initials from name
- * @param {string} name
- * @returns {string}
  */
-export const getInitials = (name) => {
+export const getInitials = (name: string): string => {
   if (!name) return "";
   const parts = name.split(" ");
   if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
@@ -36,30 +29,27 @@ export const getInitials = (name) => {
 
 /**
  * Check if user is authenticated
- * @returns {boolean}
  */
-export const isAuthenticated = () => {
+export const isAuthenticated = (): boolean => {
   return !!localStorage.getItem("auth_token");
 };
 
 /**
  * Format number with commas
- * @param {number} num
- * @returns {string}
  */
-export const formatNumber = (num) => {
+export const formatNumber = (num: number): string => {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
 
 /**
  * Debounce function
- * @param {Function} func
- * @param {number} wait
- * @returns {Function}
  */
-export const debounce = (func, wait) => {
-  let timeout;
-  return function executedFunction(...args) {
+export const debounce = <T extends (...args: any[]) => void>(
+  func: T,
+  wait: number,
+): ((...args: Parameters<T>) => void) => {
+  let timeout: ReturnType<typeof setTimeout>;
+  return function executedFunction(...args: Parameters<T>) {
     const later = () => {
       clearTimeout(timeout);
       func(...args);
@@ -71,10 +61,8 @@ export const debounce = (func, wait) => {
 
 /**
  * Download file
- * @param {Blob} blob
- * @param {string} filename
  */
-export const downloadFile = (blob, filename) => {
+export const downloadFile = (blob: Blob, filename: string): void => {
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
