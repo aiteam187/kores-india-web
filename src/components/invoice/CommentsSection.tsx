@@ -25,7 +25,7 @@ const CommentsSection = ({
         value={commentText}
         onChange={handleChange}
         disabled={disabled}
-        rows="4"
+        rows={4}
         placeholder="Add notes or comments about this invoice..."
         className={`w-full rounded-lg text-sm resize-none px-3 py-2 outline-none transition-all ${
           disabled

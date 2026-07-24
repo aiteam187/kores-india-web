@@ -91,7 +91,7 @@ const UserManagementAddModal = ({ isOpen, onClose, onAdd }) => {
   });
   const [createdUser, setCreatedUser] = useState(null);
 
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<Record<string, any>>({});
   const [adding, setAdding] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [apiStatus, setApiStatus] = useState("idle"); // 'idle', 'loading', 'success', 'error'
@@ -136,7 +136,7 @@ const UserManagementAddModal = ({ isOpen, onClose, onAdd }) => {
   };
 
   const validateForm = () => {
-    const newErrors = {};
+    const newErrors: Record<string, any> = {};
 
     if (!formData.name?.trim()) {
       newErrors.name = "Name is required";
@@ -382,7 +382,7 @@ const UserManagementAddModal = ({ isOpen, onClose, onAdd }) => {
                         : "bg-white border-slate-300 focus:ring-teal-500/20"
                     }`}
                     placeholder="9876543210"
-                    maxLength="10"
+                    maxLength={10}
                   />
                   {errors.phone_number && (
                     <p className="mt-1 text-xs text-red-600 flex items-center gap-1">

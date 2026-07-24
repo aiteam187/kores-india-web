@@ -13,7 +13,7 @@ const UserManagementEditModal = ({ isOpen, onClose, employee, onSave }) => {
     designation: "",
     status: "Active",
   });
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<Record<string, any>>({});
   const [saving, setSaving] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
@@ -59,7 +59,7 @@ const UserManagementEditModal = ({ isOpen, onClose, employee, onSave }) => {
   };
 
   const validateForm = () => {
-    const newErrors = {};
+    const newErrors: Record<string, any> = {};
 
     if (!formData.name?.trim()) {
       newErrors.name = "Name is required";
@@ -227,7 +227,7 @@ const UserManagementEditModal = ({ isOpen, onClose, employee, onSave }) => {
                   name="phone_number"
                   value={formData.phone_number}
                   onChange={handleChange}
-                  maxLength="10"
+                  maxLength={10}
                   className={`w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 ${
                     errors.phone_number
                       ? "bg-red-50 border-red-300 focus:ring-red-500/20"

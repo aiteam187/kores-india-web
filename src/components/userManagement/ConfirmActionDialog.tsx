@@ -25,7 +25,7 @@ const ConfirmActionDialog = ({
   onConfirm,
   title,
   message,
-  details,
+  details = undefined as any,
   confirmLabel = "Confirm",
   loadingLabel = "Saving...",
   loading = false,

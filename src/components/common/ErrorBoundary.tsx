@@ -4,8 +4,14 @@ import React from "react";
  * Error Boundary Component
  * Catches JavaScript errors anywhere in child component tree
  */
-class ErrorBoundary extends React.Component {
-  constructor(props) {
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error: any;
+  errorInfo: any;
+}
+
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, ErrorBoundaryState> {
+  constructor(props: { children: React.ReactNode }) {
     super(props);
     this.state = { hasError: false, error: null, errorInfo: null };
   }

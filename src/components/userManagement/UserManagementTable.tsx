@@ -45,7 +45,7 @@ const UserManagementTable = ({
     designation: [],
     location: [],
   });
-  const [visibleColumns, setVisibleColumns] = useState({
+  const [visibleColumns, setVisibleColumns] = useState<Record<string, boolean>>({
     emp_id: true,
     employee_details: true,
     contact_info: true,
@@ -627,7 +627,7 @@ const UserManagementTable = ({
                 <div className="mt-3 pt-3 border-t border-slate-200 flex gap-2">
                   <button
                     onClick={() => {
-                      const allVisible = {};
+                      const allVisible: Record<string, boolean> = {};
                       Object.keys(visibleColumns).forEach((key) => {
                         allVisible[key] = true;
                       });

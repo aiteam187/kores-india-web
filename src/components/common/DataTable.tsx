@@ -10,7 +10,7 @@ import {
 
 const DataTable = ({
   data = [],
-  onActionClick,
+  onActionClick = undefined as any,
   onRowClick,
   renderAction,
   visibleColumns = {},
@@ -24,6 +24,7 @@ const DataTable = ({
     destination_site: false,
     invoice_number: true,
     invoice_date: true,
+    invoice_time: false,
     vehicle_number: false,
     approval_status: true,
     inward_outward: true,

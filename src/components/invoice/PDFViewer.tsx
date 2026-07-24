@@ -14,7 +14,13 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-const PDFViewer = ({ fileName = "Invoice.pdf", imageFileName, base64Data }) => {
+const PDFViewer = ({
+  fileName = "Invoice.pdf",
+  imageFileName,
+  base64Data,
+  isCompact = false,
+  onToggleCompact = undefined as any,
+}) => {
   const [scale, setScale] = useState(1);
   const [rotation, setRotation] = useState(0);
   const [imageError, setImageError] = useState(false);

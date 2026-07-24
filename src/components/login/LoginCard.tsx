@@ -8,7 +8,7 @@ const LoginCard = ({
   setPassword,
   onSubmit,
   loading,
-  errors = {},
+  errors = {} as any,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 

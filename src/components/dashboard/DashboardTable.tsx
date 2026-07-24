@@ -584,7 +584,7 @@ const DashboardTable = ({
       const bDate = new Date(
         b.updated_at || b.action_date || b.Action_Date || b.invoice_date || 0,
       );
-      return bDate - aDate;
+      return bDate.getTime() - aDate.getTime();
     });
     setLocalRecords(sortedRecords);
   }, [records]);
@@ -668,7 +668,7 @@ const DashboardTable = ({
         const bDate = new Date(
           b.updated_at || b.action_date || b.Action_Date || b.invoice_date || 0,
         );
-        return bDate - aDate;
+        return bDate.getTime() - aDate.getTime();
       });
     }
     return [...filtered].sort((a, b) => {

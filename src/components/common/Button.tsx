@@ -14,7 +14,7 @@ const Button = ({
   loading = false,
   icon = null,
   className = "",
-  type = "button",
+  type = "button" as "button" | "reset" | "submit",
   ...rest
 }) => {
   const baseStyles =

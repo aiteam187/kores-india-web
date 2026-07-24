@@ -85,7 +85,7 @@ const GenericArrayEditor = ({ data, onChange }) => {
 
   if (isObjectArray) {
     const columns = Array.from(
-      new Set(data.flatMap((row) => Object.keys(row || {}))),
+      new Set<string>(data.flatMap((row) => Object.keys(row || {}))),
     );
     const updateCell = (idx, key, val) =>
       onChange(data.map((row, i) => (i === idx ? { ...row, [key]: val } : row)));
@@ -215,7 +215,7 @@ const FieldsEditor = ({ data, onChange }) => (
             <FieldsEditor
               data={val}
               onChange={(subKey, subVal) =>
-                onChange(key, { ...val, [subKey]: subVal })
+                onChange(key, { ...(val as any), [subKey]: subVal })
               }
             />
           </div>

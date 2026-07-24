@@ -19,7 +19,7 @@ const BlockVendorModal = ({
     reason: "",
     comments: "",
   });
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<Record<string, any>>({});
 
   const blockReasons = [
     { value: "", label: "Select reason..." },
@@ -47,7 +47,7 @@ const BlockVendorModal = ({
   };
 
   const validate = () => {
-    const newErrors = {};
+    const newErrors: Record<string, any> = {};
 
     if (!formData.reason) {
       newErrors.reason = "Please select a reason for blocking";
@@ -171,7 +171,7 @@ const BlockVendorModal = ({
                   name="comments"
                   value={formData.comments}
                   onChange={handleChange}
-                  rows="4"
+                  rows={4}
                   disabled={isLoading}
                   placeholder="Provide detailed reason for blocking this vendor..."
                   className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm resize-none disabled:opacity-50 disabled:cursor-not-allowed ${
