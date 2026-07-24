@@ -1,10 +1,10 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, Page } from "@playwright/test";
 
 // Bypass credentials hardcoded in src/services/authService.js — does not hit the backend.
 const ADMIN_EMAIL = "admin@gmail.com";
 const ADMIN_PASSWORD = "Admin@123";
 
-async function login(page) {
+async function login(page: Page) {
   await page.goto("/login");
   await page.getByPlaceholder("admin@gmail.com").fill(ADMIN_EMAIL);
   await page.getByPlaceholder("XXX XXX").fill(ADMIN_PASSWORD);

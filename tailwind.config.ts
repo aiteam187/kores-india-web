@@ -1,4 +1,5 @@
-/** @type {import('tailwindcss').Config} */
+import type { Config } from "tailwindcss";
+
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
 
@@ -113,10 +114,10 @@ export default {
         scaleIn: { "0%": { transform: "scale(0.95)", opacity: "0" }, "100%": { transform: "scale(1)", opacity: "1" } },
       },
       zIndex: {
-        modal: 1000,
-        overlay: 900,
-        dropdown: 800,
-        header: 700,
+        modal: "1000",
+        overlay: "900",
+        dropdown: "800",
+        header: "700",
       },
       gridTemplateColumns: {
         14: "repeat(14, minmax(0, 1fr))",
@@ -131,4 +132,4 @@ export default {
   corePlugins: {
     preflight: true,
   },
-};
+} satisfies Config;
