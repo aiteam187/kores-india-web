@@ -1,7 +1,3 @@
-// ============================================
-// FILE: src/utils/fileValidation.js
-// ============================================
-
 /**
  * File validation utilities
  */
@@ -11,40 +7,37 @@ export const ALLOWED_FILE_TYPES = ["application/pdf"];
 export const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 export const ALLOWED_EXTENSIONS = [".pdf"];
 
+export interface FileValidationResult {
+  success: boolean;
+  error: string | null;
+}
+
 /**
  * Validate file type
- * @param {File} file - File to validate
- * @returns {boolean} - Is valid
  */
-export const isValidFileType = (file) => {
+export const isValidFileType = (file: File): boolean => {
   return ALLOWED_FILE_TYPES.includes(file.type);
 };
 
 /**
  * Validate file size
- * @param {File} file - File to validate
- * @returns {boolean} - Is valid
  */
-export const isValidFileSize = (file) => {
+export const isValidFileSize = (file: File): boolean => {
   return file.size <= MAX_FILE_SIZE;
 };
 
 /**
  * Validate file extension
- * @param {string} filename - Filename to validate
- * @returns {boolean} - Is valid
  */
-export const isValidFileExtension = (filename) => {
+export const isValidFileExtension = (filename: string): boolean => {
   const extension = filename.toLowerCase().slice(filename.lastIndexOf("."));
   return ALLOWED_EXTENSIONS.includes(extension);
 };
 
 /**
  * Validate file completely
- * @param {File} file - File to validate
- * @returns {Object} - Validation result with success and error message
  */
-export const validateFile = (file) => {
+export const validateFile = (file: File | null | undefined): FileValidationResult => {
   if (!file) {
     return { success: false, error: "No file selected" };
   }
@@ -69,10 +62,8 @@ export const validateFile = (file) => {
 
 /**
  * Format file size for display
- * @param {number} bytes - File size in bytes
- * @returns {string} - Formatted size
  */
-export const formatFileSize = (bytes) => {
+export const formatFileSize = (bytes: number): string => {
   if (bytes === 0) return "0 Bytes";
   const k = 1024;
   const sizes = ["Bytes", "KB", "MB", "GB"];
