@@ -312,8 +312,8 @@ const calculateStats = (records) => {
 
 // ─── Service class ───────────────────────────────────────────────────────────
 class InvoiceService {
-  async _fetchHistory(params = {}) {
-    const query = {};
+  async _fetchHistory(params: any = {}) {
+    const query: Record<string, any> = {};
     if (params.direction) query.direction = params.direction;
 
     // /history defaults to limit=50 server-side — past 50 total records,
@@ -357,9 +357,9 @@ class InvoiceService {
     }
   }
 
-  async updateRecord(id, data) {
+  async updateRecord(id, data: any) {
     try {
-      const body = {};
+      const body: Record<string, any> = {};
       if (data.direction) body.direction = data.direction.toLowerCase();
       if (data.document_type) body.document_type = data.document_type;
       if (data.extracted_data) body.extracted_data = data.extracted_data;

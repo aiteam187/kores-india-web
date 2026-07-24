@@ -115,7 +115,7 @@ const invoiceDetailService = {
    * @param {Object} data - Approval data (validations, comments, approver info)
    * @returns {Promise} Approval response
    */
-  approveInvoice: async (invoiceId, data = {}) => {
+  approveInvoice: async (invoiceId, data: any = {}) => {
     try {
       console.log(`✅ Approving invoice: ${invoiceId}`);
       const url = `${API_BASE_URL}/invoice/${invoiceId}/approve`;
