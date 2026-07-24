@@ -26,17 +26,17 @@ import {
 const FormInput = ({
   label,
   icon: Icon,
-  type,
+  type = "text",
   name,
   value,
   onChange,
   placeholder,
   required,
-  isPassword,
-  showPassword,
-  togglePassword,
+  isPassword = false,
+  showPassword = false,
+  togglePassword = undefined as any,
   error,
-  maxLength,
+  maxLength = undefined as any,
 }) => {
   const isFilled = value && value.length > 0;
 
@@ -175,7 +175,7 @@ const AddUser = () => {
   };
 
   const [formData, setFormData] = useState(initialFormState);
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -198,7 +198,7 @@ const AddUser = () => {
   };
 
   const validateForm = () => {
-    const newErrors = {};
+    const newErrors: Record<string, any> = {};
 
     if (!formData.name.trim()) {
       newErrors.name = "Full name is required";
@@ -257,7 +257,7 @@ const AddUser = () => {
       showNotification("Please fix errors in form", "error");
       const firstErrorField = Object.keys(errors)[0];
       if (firstErrorField) {
-        const element = document.querySelector(`[name="${firstErrorField}"]`);
+        const element = document.querySelector<HTMLElement>(`[name="${firstErrorField}"]`);
         element?.scrollIntoView({ behavior: "smooth", block: "center" });
         element?.focus();
       }

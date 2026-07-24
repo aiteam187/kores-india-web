@@ -71,7 +71,7 @@ const useUserManagement = ({ autoFetch = false } = {}) => {
 
   const createEmployee = useCallback(async (employeeData) => {
     try {
-      const result = await userManagementService.createEmployee(employeeData);
+      const result: any = await userManagementService.createEmployee(employeeData);
       if (result.success) await fetchEmployees();
       return result;
     } catch (err) {

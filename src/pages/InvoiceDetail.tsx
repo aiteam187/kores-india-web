@@ -74,7 +74,7 @@ const InvoiceDetail = ({ invoiceId = "INV-001" }) => {
     const fetchInvoiceData = async () => {
       setLoading(true);
       try {
-        const response = await invoiceDetailService.getInvoiceDetail(invoiceId);
+        const response: any = await invoiceDetailService.getInvoiceDetail(invoiceId);
         const rawResponse = response.data || response;
         const fileData = rawResponse.files?.[0];
 
@@ -127,7 +127,7 @@ const InvoiceDetail = ({ invoiceId = "INV-001" }) => {
     if (!Array.isArray(backendValidations)) return [];
 
     return backendValidations.map((item, index) => {
-      const transformed = {
+      const transformed: Record<string, any> = {
         id: item.id || index + 1,
         label: item.label || item.field_name || `Field ${index + 1}`,
         isConfirmed: item.is_confirmed ?? item.isConfirmed ?? true,

@@ -75,7 +75,7 @@ const Dashboard = () => {
 
   const getTimeSinceSync = () => {
     if (!lastSyncTime) return "";
-    const diffMs = currentTime - lastSyncTime;
+    const diffMs = currentTime.getTime() - lastSyncTime.getTime();
     const diffMins = Math.floor(diffMs / 60000);
     const diffHours = Math.floor(diffMins / 60);
     if (diffMins < 1) return "Just now";

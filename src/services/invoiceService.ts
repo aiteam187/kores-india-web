@@ -384,7 +384,7 @@ class InvoiceService {
     }
   }
 
-  async syncData() {
+  async syncData(_params?: any) {
     return {
       success: true,
       message: "Sync completed",
