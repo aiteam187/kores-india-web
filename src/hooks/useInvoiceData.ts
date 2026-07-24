@@ -6,13 +6,13 @@ import invoiceService from "../services/invoiceService";
  * @param {Object} options - { autoFetch, params }
  * @returns {Object}
  */
-const useInvoiceData = (options = {}) => {
+const useInvoiceData = (options: any = {}) => {
   const { autoFetch = true, params = {} } = options;
 
-  const [stats, setStats] = useState([]);
-  const [records, setRecords] = useState([]);
+  const [stats, setStats] = useState<any[]>([]);
+  const [records, setRecords] = useState<any>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<any>(null);
   const [pagination, setPagination] = useState({
     page: 1,
     totalPages: 1,
@@ -38,7 +38,7 @@ const useInvoiceData = (options = {}) => {
   /**
    * Fetch all data (stats + records)
    */
-  const fetchAllData = useCallback(async (fetchParams) => {
+  const fetchAllData = useCallback(async (fetchParams?: any) => {
     if (isFetchingRef.current) return;
     isFetchingRef.current = true;
     try {
@@ -65,7 +65,7 @@ const useInvoiceData = (options = {}) => {
         console.log("✅ Records set:", recordsData.data?.length);
       } else {
         setRecords(recordsData);
-        console.log("✅ Records set (direct):", recordsData?.length);
+        console.log("✅ Records set (direct):", (recordsData as any)?.length);
       }
 
       console.log("✅ fetchAllData completed");
@@ -119,7 +119,7 @@ const useInvoiceData = (options = {}) => {
         console.log("✅ Records fetched:", response.data?.length);
       } else {
         setRecords(response);
-        console.log("✅ Records fetched (direct):", response?.length);
+        console.log("✅ Records fetched (direct):", (response as any)?.length);
       }
     } catch (err) {
       setError(err.message || "Failed to fetch records");

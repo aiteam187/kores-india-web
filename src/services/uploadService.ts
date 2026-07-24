@@ -17,7 +17,7 @@ const uploadAndExtract = async (file, onProgress) => {
 
     const xhr = new XMLHttpRequest();
 
-    return new Promise((resolve, reject) => {
+    return new Promise<any>((resolve, reject) => {
       let uploadComplete = false;
       let processingInterval = null;
       let currentProgress = 0;
